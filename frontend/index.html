@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acortador de enlaces | Diego Ruiz</title>
+  <meta name="description" content="Acorta enlaces largos en segundos. Interfaz en Amazon S3, API FastAPI en Amazon EC2 y almacenamiento en Amazon DynamoDB.">
+  <meta name="author" content="Diego Ruiz">
+  <meta name="theme-color" content="#1f3a8a">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/config.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <p class="brand"><span class="brand__mark" aria-hidden="true">↗</span> Enlace&nbsp;Corto</p>
+    </div>
+  </header>
+
+  <main id="contenido" class="container">
+    <section class="hero" aria-labelledby="titulo">
+      <h1 id="titulo">Acorta tus enlaces largos</h1>
+      <p class="hero__lead">Pega una dirección web y obtén un enlace corto con identificador único que redirige al destino original.</p>
+    </section>
+
+    <section class="card" aria-labelledby="titulo-formulario">
+      <h2 id="titulo-formulario" class="card__title">Nuevo enlace</h2>
+
+      <form id="shorten-form" class="form" novalidate>
+        <label for="original-url" class="form__label">URL original</label>
+        <div class="form__row">
+          <input
+            id="original-url"
+            name="original_url"
+            class="form__input"
+            type="url"
+            inputmode="url"
+            autocomplete="url"
+            placeholder="https://www.ejemplo.com/articulo"
+            maxlength="2048"
+            required
+            aria-describedby="url-hint url-error"
+          >
+          <button id="submit-button" class="button button--primary" type="submit">Acortar</button>
+        </div>
+        <p id="url-hint" class="form__hint">Debe comenzar con http:// o https://</p>
+        <p id="url-error" class="message message--error" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <section id="result" class="card card--result" aria-labelledby="titulo-resultado" hidden>
+      <h2 id="titulo-resultado" class="card__title">Tu enlace corto</h2>
+
+      <label for="short-url" class="form__label">Enlace corto generado</label>
+      <div class="form__row">
+        <input id="short-url" class="form__input form__input--readonly" type="text" readonly>
+        <button id="copy-button" class="button button--secondary" type="button">Copiar</button>
+      </div>
+      <p id="copy-status" class="message message--success" role="status" aria-live="polite"></p>
+
+      <dl class="details">
+        <div class="details__row">
+          <dt>Identificador (UUID)</dt>
+          <dd id="short-code" class="details__mono"></dd>
+        </div>
+        <div class="details__row">
+          <dt>Destino original</dt>
+          <dd id="original-result" class="details__wrap"></dd>
+        </div>
+      </dl>
+
+      <a id="open-link" class="link" href="#" target="_blank" rel="noopener noreferrer">Abrir enlace corto</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Diego Ruiz · Midterm Práctico · Amazon S3 + EC2 + DynamoDB</p>
+    </div>
+  </footer>
+</body>
+</html>

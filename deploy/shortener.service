@@ -1,0 +1,17 @@
+# Servicio systemd: mantiene la API activa al cerrar SSH y tras reiniciar la instancia.
+# Copiar a /etc/systemd/system/shortener.service
+[Unit]
+Description=Acortador de enlaces (FastAPI CLI) - Diego Ruiz
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/home/ec2-user/acortador-aws-diego-ruiz/backend
+EnvironmentFile=/home/ec2-user/acortador-aws-diego-ruiz/backend/.env
+ExecStart=/home/ec2-user/acortador-aws-diego-ruiz/backend/.venv/bin/fastapi run src/main.py --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

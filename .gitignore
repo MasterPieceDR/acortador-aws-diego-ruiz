@@ -1,0 +1,19 @@
+# Entorno virtual y caché de Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Variables de entorno (nunca subir al repositorio)
+.env
+
+# Claves y credenciales
+*.pem
+*.key
+.aws/
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
