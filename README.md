@@ -32,15 +32,18 @@ acortador-aws-diego-ruiz/
 │   ├── css/styles.css
 │   ├── js/config.js         # URL del backend (API_BASE_URL)
 │   ├── js/app.js            # Validación, fetch(), copiar enlace
+│   ├── fonts/               # Overpass (SIL OFL), servida desde el propio bucket
 │   ├── favicon.svg
 │   └── robots.txt
 └── deploy/
+    ├── setup_ec2.sh             # Instala y despliega el backend en EC2
+    ├── pruebas.sh               # Pruebas de los endpoints contra la API desplegada
     ├── shortener.service        # Servicio systemd para EC2
     ├── iam-policy-dynamodb.json # Política de mínimo privilegio del rol IAM
     └── s3-bucket-policy.json    # Lectura pública del sitio estático
 ```
 
-El proyecto no usa archivos `__init__.py`: las carpetas de `src/` funcionan como *namespace packages* de Python 3 y se importan como `src.<módulo>`.
+El proyecto no usa archivos `__init__.py`: las carpetas de `src/` funcionan como *namespace packages* de Python 3. `fastapi run src/main.py` agrega `src/` al `sys.path`, por eso los módulos se importan directamente (`from config import ...`).
 
 ## Endpoints
 
@@ -97,6 +100,19 @@ python -m http.server 5500
 Abrir `http://localhost:5500`. La DynamoDB local guarda los datos en memoria: al cerrar `moto_server` se borran y hay que volver a ejecutar `python scripts/create_table.py`.
 
 Para usar la tabla real de AWS desde tu PC, deja vacío `DYNAMODB_ENDPOINT_URL` en `.env` y configura las credenciales de AWS Academy en `~/.aws/credentials`.
+
+## Despliegue en AWS
+
+1. **DynamoDB:** crear la tabla `shortener-links-diego` (clave de partición `short_code`, String).
+2. **IAM:** rol para EC2 con la política de `deploy/iam-policy-dynamodb.json` (solo `PutItem` y `GetItem`).
+3. **EC2 (Amazon Linux 2023):** asociar el rol, abrir el puerto 8000 y restringir SSH. Dentro de la instancia:
+   ```bash
+   curl -O https://raw.githubusercontent.com/MasterPieceDR/acortador-aws-diego-ruiz/main/deploy/setup_ec2.sh
+   bash setup_ec2.sh http://<bucket>.s3-website-us-east-1.amazonaws.com
+   ```
+   Instala Python 3.11 (Amazon Linux 2023 trae 3.9 y FastAPI 0.162 requiere 3.10 o superior), crea el `.env` y deja la API en systemd.
+4. **S3:** bucket con alojamiento de sitio web estático y la política de `deploy/s3-bucket-policy.json`. Cambiar `API_BASE_URL` en `frontend/js/config.js` por `http://<ip-publica-ec2>:8000` y subir la carpeta `frontend/`.
+5. **Pruebas:** `bash deploy/pruebas.sh http://<ip-publica-ec2>:8000`.
 
 ## Variables de entorno
 
